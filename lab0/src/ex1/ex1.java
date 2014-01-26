@@ -43,11 +43,11 @@ public class ex1 {
                 }
 
                 // Verify Valid Triangle Sides
-                boolean valid_triangle = AreaOfTriangle.validTriangle(a, b, c);
+                boolean valid_triangle = Triangle.validTriangle(a, b, c);
                 
                 if (valid_triangle){
                     // Calculation of Triangle Area
-                    double area = AreaOfTriangle.area(a, b, c);
+                    double area = Triangle.area(a, b, c);
 
                     System.out.printf("Area = %.2f\n", area);
                 } else {                    

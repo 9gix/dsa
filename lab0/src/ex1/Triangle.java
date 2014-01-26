@@ -8,7 +8,7 @@ package ex1;
 /**
  * @author Eugene
  */
-public class AreaOfTriangle {
+public class Triangle {
 
     public static double perimeter(double a, double b, double c){
         return a + b + c;
@@ -23,8 +23,8 @@ public class AreaOfTriangle {
     }
 
     public static double area(double a, double b, double c) {
-        if (AreaOfTriangle.validTriangle(a, b, c)){
-            double half_perimeter = AreaOfTriangle.perimeter(a, b, c) / 2;
+        if (Triangle.validTriangle(a, b, c)){
+            double half_perimeter = Triangle.perimeter(a, b, c) / 2;
             double result = Math.sqrt(half_perimeter * (half_perimeter - a)
                     * (half_perimeter - b) * (half_perimeter - c));
             return result;
