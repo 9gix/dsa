@@ -3,7 +3,7 @@
  * Used for calculation of triangle area and perimeter or
  * checking the validity of a triangle. 
  */
-package ex1;
+package lab0.ex1;
 
 /**
  * @author Eugene

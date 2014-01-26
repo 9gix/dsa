@@ -1,3 +1,4 @@
+
 import java.util.Scanner;
 
 // CS1020 (AY2012/3 Semester 2)

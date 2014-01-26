@@ -1,8 +1,8 @@
-package ex2;
+package lab0.ex2;
 
 import java.util.Scanner;
 
-public class ex2 {
+public class DateConvertApp {
 
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);

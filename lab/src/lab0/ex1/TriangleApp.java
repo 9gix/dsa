@@ -2,7 +2,7 @@
  * Program: ex1, lab0
  * Program Main Execution
  */
-package ex1;
+package lab0.ex1;
 
 import java.util.Scanner;
 
@@ -10,7 +10,7 @@ import java.util.Scanner;
  * @author Eugene
  *
  */
-public class ex1 {
+public class TriangleApp {
 
     /**
      * @param args

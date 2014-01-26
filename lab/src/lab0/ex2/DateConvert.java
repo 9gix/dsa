@@ -1,4 +1,4 @@
-package ex2;
+package lab0.ex2;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -1,4 +1,4 @@
-package ex1;
+package lab0.ex1;
 
 import static org.junit.Assert.*;
 import junit.framework.Assert;
