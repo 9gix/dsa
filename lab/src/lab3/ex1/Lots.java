@@ -6,39 +6,38 @@ package lab3.ex1;
 
 class Lots {
 
-	/****** Attributes *********/
-	int lotStart; // start lot number in the group
-	int lotSize;  // how many lots are there in this group?
+    /****** Attributes *********/
+    int lotStart; // start lot number in the group
+    int lotSize; // how many lots are there in this group?
 
-	/******* Constructors ********/
-	public Lots() {
-	}
+    /******* Constructors ********/
+    public Lots() {
+    }
 
-	public Lots(int start, int size) {
-		setLotStart(start);
-		setLotSize(size);
-	}
+    public Lots(int start, int size) {
+        setLotStart(start);
+        setLotSize(size);
+    }
 
-	/******** Accessors *******/
-	public int getLotStart() {
-		return lotStart;
-	}
+    /******** Accessors *******/
+    public int getLotStart() {
+        return lotStart;
+    }
 
-	public int getLotSize() {
-		return lotSize;
-	}
+    public int getLotSize() {
+        return lotSize;
+    }
 
-	/********* Mutators ********/
-	public void setLotStart(int start) {
-		lotStart = start;
-	}
+    /********* Mutators ********/
+    public void setLotStart(int start) {
+        lotStart = start;
+    }
 
-	public void setLotSize(int size) {
-		lotSize = size;
-	}
+    public void setLotSize(int size) {
+        lotSize = size;
+    }
 
-	public String toString() {
-		return "[" + getLotStart() + ";" + getLotSize() + "]";
-	}
+    public String toString() {
+        return "[" + getLotStart() + ";" + getLotSize() + "]";
+    }
 }
-
