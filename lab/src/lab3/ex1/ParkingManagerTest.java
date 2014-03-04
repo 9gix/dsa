@@ -1,94 +1,64 @@
 package lab3.ex1;
 
-// TODO: REFACTOR CODE ON THE REPETITIVE TEST CODE
-
 import static org.junit.Assert.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
-
-import lab2.ex1.GoldHunter;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
-@RunWith(value=Parameterized.class)
 public class ParkingManagerTest {
+    ParkingManager parking_lot;
 
-    private final ByteArrayOutputStream out_stream = new ByteArrayOutputStream();
-    private String expected = null;
-    
-    @Parameters
-    public static Collection<Object[]> getTestParameters(){
-        return Arrays.asList(new Object[][]{
-                {"/lab3.ex1/input/park1.in", "/lab3.ex1/output/park1.out"},
-                {"/lab3.ex1/input/park2.in", "/lab3.ex1/output/park2.out"},
-                {"/lab3.ex1/input/park3.in", "/lab3.ex1/output/park3.out"},
-                {"/lab3.ex1/input/park4.in", "/lab3.ex1/output/park4.out"},
-                {"/lab3.ex1/input/park5.in", "/lab3.ex1/output/park5.out"},
-        });
-    }
-    
-    /**
-     * Constructor Methods, the parameter will be automatically 
-     * filled by the @parameters method, 
-     * Note: see parameterized junit for more information 
-     * 
-     * @param input_file
-     * @param output_file
-     */
-    public ParkingManagerTest(String input_file, String output_file){
-        
-        // Input
-        InputStream in_stream = this.getClass().getResourceAsStream(input_file);
-        
-        // Any Prompt of Input will receive the in_stream from the input file.
-        System.setIn(in_stream);
-        
-        // Output
-        URL url = this.getClass().getResource(output_file);
-        try {
-            Path resource_path = Paths.get(url.toURI());
-            expected = new String(Files.readAllBytes(resource_path));
-        } catch (URISyntaxException | IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-    
     @Before
-    public void setUpStreams(){
-        System.setOut(new PrintStream(out_stream));
-    }
-    
-    @After
-    public void tearDownStreams(){
-        System.setOut(null);
+    public void setUp() throws Exception {
+        parking_lot = new ParkingManager();
     }
 
     @Test
-    public void testMainApp() {
-
-        // Call the Program
-        ParkingManager.main(null);
-
-        // Assert the program output match with the testdata output.
-        assertEquals(expected, out_stream.toString());
+    public void testAddFirstLot() {
+        parking_lot.addLots(12, 2);
         
-        
+        assertEquals("[12;2]", parking_lot.toString());
     }
-
+    
+    @Test
+    public void testAddMultipleLot() {
+        parking_lot.addLots(12, 2);
+        parking_lot.addLots(2, 3);
+        assertEquals("[2;3]->[12;2]", parking_lot.toString());
+    }
+    
+    @Test
+    public void testAddMultipleLotWithMergedOneSide() {
+        parking_lot.addLots(12, 2);
+        parking_lot.addLots(2, 3);
+        parking_lot.addLots(8, 4);
+        assertEquals("[2;3]->[8;6]", parking_lot.toString());
+    }
+    
+    @Test
+    public void testAddInvalidLot() {
+        parking_lot.addLots(2, 3);
+        parking_lot.addLots(8, 6);
+        parking_lot.addLots(6, 3); // Invalid & Ignore
+        assertEquals("[2;3]->[8;6]", parking_lot.toString());
+    }
+    
+    @Test
+    public void testAddMoreLotInbetween() {
+        parking_lot.addLots(8, 6);
+        parking_lot.addLots(2, 3);
+        parking_lot.addLots(16,5);
+        assertEquals("[2;3]->[8;6]->[16;5]", parking_lot.toString());
+        parking_lot.addLots(6,1);
+        assertEquals("[2;3]->[6;1]->[8;6]->[16;5]", parking_lot.toString());
+    }
+    
+    @Test
+    public void testAddMergeBothSide() {
+        parking_lot.addLots(8, 6);
+        parking_lot.addLots(2, 3);
+        parking_lot.addLots(16,5); // [2;3]->[8;6]->[16;5]
+        parking_lot.addLots(5,3);
+        assertEquals("[2;12]->[16;5]", parking_lot.toString());
+    }
 }
