@@ -27,6 +27,12 @@ public class ParkingManager {
         parkingLots = new LinkedList<Lots>();
     }
 
+    /**
+     * ADD Lots operation on ParkingLots
+     * 
+     * @param start
+     * @param size
+     */
     public void addLots(int start, int size){
         
         // RANGE (start ... end)
@@ -82,20 +88,23 @@ public class ParkingManager {
                     } catch (IndexOutOfBoundsException e) {
                         // Since this is the last element,
                         // then just set the size
-                        lot.setLotSize(end-lot_start);
+                        int new_size = end - lot_start;
+                        lot.setLotSize(new_size);
                     } finally {
                         if (next_lot != null){
                             int next_lot_start = next_lot.getLotStart();
                             int next_lot_end = next_lot_start + next_lot.getLotSize();
                             if (next_lot_start > end){
                                 // Just merge one side
-                                lot.setLotSize(end - lot_start);
+                                int new_size = end - lot_start;
+                                lot.setLotSize(new_size);
                             } else if (next_lot_start == end) {
                                 // Case 4: Merge BOTH HEAD & TAIL
                                 // E.g. ADD [6..8] into [1..6], [8..9]
                                 // RESULT: [1..9]
                                 // Merge Both Side & remove the next lots
-                                lot.setLotSize(next_lot_end - lot_start);
+                                int new_size = next_lot_end - lot_start;
+                                lot.setLotSize(new_size);
                                 parkingLots.remove(next_lot);
                             } 
                         }
@@ -127,6 +136,13 @@ public class ParkingManager {
         }
     }
     
+    /**
+     * Retrieve the Lots that contains within the range given
+     * 
+     * @param start
+     * @param size
+     * @return Lots
+     */
     private Lots _getOccupiedLot(int start, int size){
         int end = start + size;
         int parking_lot_size = parkingLots.size();
@@ -143,15 +159,23 @@ public class ParkingManager {
         return null;
     }
 
-    // Add description of the method
+    /**
+     * Remove Lots operation on ParkingLots
+     * 
+     * @param start
+     * @param size
+     */
     public void removeLots(int start, int size) {
         // Remove Lot from Start until End
         int end = start + size; 
         
+        // Retrieve the Occupied Lots from the range given
         Lots occupied_lots = this._getOccupiedLot(start, size);
         
+        // Lots is Not Occupied
         if (occupied_lots == null) return;
         
+        // Occupied Lots Range
         int occupied_lots_start = occupied_lots.getLotStart();
         int occupied_lots_end = occupied_lots_start + occupied_lots.getLotSize();
         
