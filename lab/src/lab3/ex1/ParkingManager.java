@@ -62,6 +62,7 @@ public class ParkingManager {
                 is_merged_prev_lot = true;
             }
 
+            // Add Lots
             if (!is_merged_prev_lot || !is_merged_next_lot) {
                 if (prev_occupied_lot.getLotStart()
                         + prev_occupied_lot.getLotSize() < lot.getLotStart()
@@ -96,10 +97,8 @@ public class ParkingManager {
         int parking_lot_size = parkingLots.size();
         for (int i = 0; i < parking_lot_size; i++) {
             Lots lot = parkingLots.get(i);
-            if (start < lot.getLotStart()) {
+            if (start <= lot.getLotStart()) {
                 return i;
-            } else if (start == lot.getLotStart()) {
-                return -1;
             } else {
                 continue;
             }
@@ -108,11 +107,58 @@ public class ParkingManager {
         // next occupied index for empty parking lot is 0 instead of -1
         return parking_lot_size == 0 ? 0 : parking_lot_size - 1;
     }
+    
+    private Lots _getOccupiedLot(int start, int size){
+        int end = start + size;
+        int parking_lot_size = parkingLots.size();
+        for (int i = 0; i < parking_lot_size; i++) {
+            Lots lot = parkingLots.get(i);
+            int lot_start = lot.getLotStart();
+            int lot_end = lot_start + lot.getLotSize();
+            if (lot_start <= start && end <= lot_end) {
+                return lot;
+            } else if (lot_start > start){
+                return null;
+            }
+        }
+        return null;
+    }
 
     // Add description of the method
     public void removeLots(int start, int size) {
-        // Fill in the code
+        // Remove Lot from Start until End
+        int end = start + size; 
+        
+        Lots occupied_lots = this._getOccupiedLot(start, size);
+        
+        if (occupied_lots == null) return;
+        
+        int occupied_lots_start = occupied_lots.getLotStart();
+        int occupied_lots_end = occupied_lots_start + occupied_lots.getLotSize();
+        
+        // Only Remove Valid Lot Range
+        if (start <= occupied_lots_end && end <= occupied_lots_end){
 
+            // Case 1: Remove Lots in the middle of another Lots.
+            if (occupied_lots_start < start && start < occupied_lots_end && occupied_lots_end != end){
+                occupied_lots.setLotSize(start - occupied_lots_start);
+                this.addLots(end, occupied_lots_end - end);
+            } else if ((occupied_lots_start == start) && (occupied_lots_end == end)){
+                // Case 2: Remove whole lots
+                parkingLots.remove(occupied_lots);
+            } else if (occupied_lots_end == end){
+                // Case 3: Remove Lots in the next edge of another lots
+                occupied_lots.setLotSize(start - occupied_lots_start);
+            } else if (occupied_lots_start == start){
+                // Case 4: Remove Lots in the previous edge of another lots
+                occupied_lots.setLotStart(end);
+                occupied_lots.setLotSize(occupied_lots_end - end);
+            }
+            
+            
+        }
+        
+        
     }
 
     // Returns the string representation of the linked list

@@ -61,4 +61,64 @@ public class ParkingManagerTest {
         parking_lot.addLots(5,3);
         assertEquals("[2;12]->[16;5]", parking_lot.toString());
     }
+    
+    @Test
+    public void testRemoveLot(){
+        parking_lot.addLots(100, 100);
+        parking_lot.removeLots(150, 10);
+        assertEquals("[100;50]->[160;40]", parking_lot.toString());
+    }
+    
+    @Test
+    public void testRemoveMoreLot(){
+        parking_lot.addLots(110, 40);
+        parking_lot.addLots(160, 30);
+        parking_lot.removeLots(120, 8);
+        assertEquals("[110;10]->[128;22]->[160;30]", parking_lot.toString());
+    }
+    
+    @Test
+    public void testRemoveLotInvalid(){
+        parking_lot.addLots(100, 50);
+        parking_lot.addLots(160, 40);
+        parking_lot.removeLots(140, 50);
+        assertEquals("[100;50]->[160;40]", parking_lot.toString());
+    }
+    
+    @Test
+    public void testRemoveLotPrevEdge(){
+        parking_lot.addLots(100, 50);
+        parking_lot.addLots(160, 40);
+        parking_lot.removeLots(100, 10);
+        assertEquals("[110;40]->[160;40]", parking_lot.toString());
+    }
+    
+    @Test
+    public void testRemoveLotNextEdge(){
+        parking_lot.addLots(110, 40);
+        parking_lot.addLots(160, 40);
+        parking_lot.removeLots(190, 10);
+        assertEquals("[110;40]->[160;30]", parking_lot.toString());
+    }
+    
+    @Test
+    public void testRemoveWholeLot(){
+        parking_lot.addLots(110, 40);
+        parking_lot.addLots(190, 10);
+        parking_lot.addLots(10, 10);
+        parking_lot.removeLots(110, 40);
+        assertEquals("[10;10]->[190;10]", parking_lot.toString());
+        parking_lot.removeLots(190, 10);
+        assertEquals("[10;10]", parking_lot.toString());
+        parking_lot.removeLots(10, 10);
+        assertEquals("", parking_lot.toString());
+    }
+    
+    @Test
+    public void testAddEdgeCase1(){
+        parking_lot.addLots(190, 10);
+        parking_lot.addLots(300, 300);
+        parking_lot.addLots(600, 12);
+        assertEquals("[190;10]->[300;312]", parking_lot.toString());
+    }
 }
