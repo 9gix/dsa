@@ -83,12 +83,20 @@ public class ParkingManager {
     }
 
     private int _getPrevOccupiedIndex(int start) {
-        int prev_index = this._getNextOccupiedIndex(start) - 1;
-        if (prev_index < 0) {
-            return 0;
-        } else {
-            return prev_index;
+        // TODO: Implement a divide and conquer to resolve the index faster.
+
+        // Currently is using lookup from start of parking lot
+        // Worst Case when the start lot is the last parking lot
+        int parking_lot_size = parkingLots.size();
+        for (int i = 0; i < parking_lot_size; i++) {
+            Lots lot = parkingLots.get(i);
+            if (start <= lot.getLotStart()) {
+                return i <= 0 ? 0 : i - 1;
+            } else {
+                continue;
+            }
         }
+        return parking_lot_size == 0 ? 0 : parking_lot_size - 1;
     }
 
     private int _getNextOccupiedIndex(int start) {
