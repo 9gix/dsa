@@ -117,7 +117,7 @@ public class ParkingManagerTest {
     @Test
     public void testAddEdgeCase1(){
         parking_lot.addLots(190, 10);
-        parking_lot.addLots(300, 300);
+        parking_lot.addLots(300, 300); // [190;10]->[300;300]
         parking_lot.addLots(600, 12);
         assertEquals("[190;10]->[300;312]", parking_lot.toString());
     }

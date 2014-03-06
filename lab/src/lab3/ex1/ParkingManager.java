@@ -2,13 +2,18 @@ package lab3.ex1;
 
 // CS1020 (AY2013/4 Semester 2)
 // Take-home lab #3
-// Name: 
-// Matric. No.: 
-// Lab group: 
-// Write the program description below.
-// It is mandatory to write program description at the top of every program.
-// Marks will be awarded for this in sit-in labs.
-// Please remove this line and its preceding 3 lines.
+// Name: Eugene
+// Matric. No.: A0116631N
+// Lab group: 7
+/**
+ * Parking Manager Apps
+ * 
+ * Management of Occupied Parking Lots numbered from 1 to 1000.
+ * 
+ * Operations:
+ * 1. ADD(start, size)
+ * 2. REMOVE(start, size)
+ */
 
 import java.util.*;
 
@@ -22,100 +27,104 @@ public class ParkingManager {
         parkingLots = new LinkedList<Lots>();
     }
 
-    // Add description of the method
-    public void addLots(int start, int size) {
-        Lots lot = new Lots(start, size);
+    public void addLots(int start, int size){
+        
+        // RANGE (start ... end)
+        // `start` to `end` is the new lots that will be added
+        int end = start + size;
 
         
-        if (parkingLots.isEmpty()) {
-            parkingLots.add(lot);
+        int parking_lot_size = parkingLots.size();
+        
+        // Parking Lot MAX Range
+        if (end > LAST_LOT){
+            return;
+        }
+        
+        // ADD Operation cases 
+        if (parkingLots.isEmpty()){
+            parkingLots.add(new Lots(start, size));
         } else {
-            int next_occupied_lot_index = this._getNextOccupiedIndex(start);
-            int prev_occupied_lot_index = this._getPrevOccupiedIndex(start);
-
-            Lots next_occupied_lot = parkingLots.get(next_occupied_lot_index);
-            Lots prev_occupied_lot = parkingLots.get(prev_occupied_lot_index);
-
-            boolean is_merged_next_lot = false;
-            boolean is_merged_prev_lot = false;
-
-            // Merge to Next Lot
-            if (lot.getLotStart() + lot.getLotSize() == next_occupied_lot
-                    .getLotStart()) {
-                next_occupied_lot.setLotStart(lot.getLotStart());
-                next_occupied_lot.setLotSize(lot.getLotSize()
-                        + next_occupied_lot.getLotSize());
-                is_merged_next_lot = true;
-            }
-
-            // Merge to Prev Lot
-            if (lot.getLotStart() == prev_occupied_lot.getLotStart()
-                    + prev_occupied_lot.getLotSize()) {
-                if (is_merged_next_lot) {
-                    next_occupied_lot.setLotStart(prev_occupied_lot
-                            .getLotStart());
-                    next_occupied_lot.setLotSize(prev_occupied_lot.getLotSize()
-                            + next_occupied_lot.getLotSize());
-                    parkingLots.remove(prev_occupied_lot);
-                } else {
-                    prev_occupied_lot.setLotSize(lot.getLotSize()
-                            + prev_occupied_lot.getLotSize());
-                }
-                is_merged_prev_lot = true;
-            }
-
-            // Add Lots
-            if (!is_merged_prev_lot || !is_merged_next_lot) {
-                if (prev_occupied_lot.getLotStart()
-                        + prev_occupied_lot.getLotSize() < lot.getLotStart()
-                        && lot.getLotStart() + lot.getLotSize() < next_occupied_lot
-                                .getLotStart()) {
-                    parkingLots.add(next_occupied_lot_index, lot);
-                } else if (prev_occupied_lot.getLotStart() > lot.getLotStart()
-                        + lot.getLotSize()) {
-                    parkingLots.addFirst(lot);
-                } else if (next_occupied_lot.getLotStart()
-                        + next_occupied_lot.getLotSize() < lot.getLotStart()) {
-                    parkingLots.addLast(lot);
-                }
-            }
-        }
-    }
-
-    private int _getPrevOccupiedIndex(int start) {
-        // TODO: Implement a divide and conquer to resolve the index faster.
-
-        // Currently is using lookup from start of parking lot
-        // Worst Case when the start lot is the last parking lot
-        int parking_lot_size = parkingLots.size();
-        for (int i = 0; i < parking_lot_size; i++) {
-            Lots lot = parkingLots.get(i);
-            if (start <= lot.getLotStart()) {
-                return i <= 0 ? 0 : i - 1;
-            } else {
-                continue;
-            }
-        }
-        return parking_lot_size == 0 ? 0 : parking_lot_size - 1;
-    }
-
-    private int _getNextOccupiedIndex(int start) {
-        // TODO: Implement a divide and conquer to resolve the index faster.
-
-        // Currently is using lookup from start of parking lot
-        // Worst Case when the start lot is the last parking lot
-        int parking_lot_size = parkingLots.size();
-        for (int i = 0; i < parking_lot_size; i++) {
-            Lots lot = parkingLots.get(i);
-            if (start <= lot.getLotStart()) {
-                return i;
-            } else {
-                continue;
+            
+            // We need to find the right lots to insert the new lots to.
+            // So we have to iterate the entire parking lot
+            for (int i = 0; i < parking_lot_size; i++){
+                
+                // currently iterated on parkingLots
+                Lots lot = parkingLots.get(i);
+                
+                // currently iterated parkingLots range [start..end]
+                // `lot_start` and `lot_end` is the currently iterated lots
+                // we will refer to these to know the range the lots
+                int lot_start = lot.getLotStart();
+                int lot_end = lot_start + lot.getLotSize();
+                
+                // true if currently iterated parkingLots is the last lots
+                boolean is_last_lot = i == parking_lot_size - 1;
+                
+                if (lot_end < start && is_last_lot ){
+                    // Case 1: The Last Parking Lots.
+                    // e.g. Add [10..15] into [1..5]
+                    // The currently iterated parking lots 
+                    // is smaller then the new lots
+                    // So Add new lot to the last parking Lots
+                    parkingLots.addLast(new Lots(start, size));
+                    return;
+                } else if (lot_end < start){
+                    // Case 2: Not in range, SKIP!!
+                    continue; // Continue to next iteration
+                } else if (lot_end == start){
+                    // Case 3: Merge Head
+                    // e.g. ADD [6..7] into [1..6] then [1..7] 
+                    Lots next_lot = null;
+                    try {
+                        next_lot = parkingLots.get(i+1);
+                    } catch (IndexOutOfBoundsException e) {
+                        // Since this is the last element,
+                        // then just set the size
+                        lot.setLotSize(end-lot_start);
+                    } finally {
+                        if (next_lot != null){
+                            int next_lot_start = next_lot.getLotStart();
+                            int next_lot_end = next_lot_start + next_lot.getLotSize();
+                            if (next_lot_start > end){
+                                // Just merge one side
+                                lot.setLotSize(end - lot_start);
+                            } else if (next_lot_start == end) {
+                                // Case 4: Merge BOTH HEAD & TAIL
+                                // E.g. ADD [6..8] into [1..6], [8..9]
+                                // RESULT: [1..9]
+                                // Merge Both Side & remove the next lots
+                                lot.setLotSize(next_lot_end - lot_start);
+                                parkingLots.remove(next_lot);
+                            } 
+                        }
+                    }
+                    return;
+                } else if (end > lot_start || 
+                        (lot_start <= start && start <= lot_end)){
+                    // Invalid Case: Lot is occupied or Overlapped
+                    // E.g. ADD [6..7] into [1..9] or similar
+                    return;
+                } else if (end < lot_start){
+                    
+                    // Case 5: Insert Lots
+                    // E.g. ADD [1..2] into [8..9]
+                    // RESULT: [1..2], [8..9]
+                    
+                    // Inserting lots before the currently iterated lots
+                    parkingLots.add(i, new Lots(start, size));
+                    return;
+                } else if (end == lot_start){
+                    // Case 6: Merge Tail
+                    // E.g. ADD [6..8] into [8..9]
+                    // RESULT: [6..9]
+                    lot.setLotStart(start);
+                    lot.setLotSize(lot_end - start);
+                    return;
+                }       
             }
         }
-
-        // next occupied index for empty parking lot is 0 instead of -1
-        return parking_lot_size == 0 ? 0 : parking_lot_size - 1;
     }
     
     private Lots _getOccupiedLot(int start, int size){
