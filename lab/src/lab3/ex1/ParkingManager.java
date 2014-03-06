@@ -14,6 +14,7 @@ import java.util.*;
 
 public class ParkingManager {
 
+    
     private static final int LAST_LOT = 1000;
     private LinkedList<Lots> parkingLots;
 
@@ -25,6 +26,7 @@ public class ParkingManager {
     public void addLots(int start, int size) {
         Lots lot = new Lots(start, size);
 
+        
         if (parkingLots.isEmpty()) {
             parkingLots.add(lot);
         } else {
