@@ -14,7 +14,7 @@ import java.util.*;
 
 public class ParkingManager {
 
-    
+
     private static final int LAST_LOT = 1000;
     private LinkedList<Lots> parkingLots;
 
