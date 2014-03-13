@@ -1,5 +1,3 @@
-package lab4.ex1;
-
 // CS1020 (AY2013/4 Semester 2)
 // Take-home lab #4
 // Name: Eugene
