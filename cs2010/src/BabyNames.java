@@ -41,17 +41,21 @@ class BabyNames {
 
   // Declaration
   // --------------------------------------------
-	private TreeSet<BabyName> _baby_names;
+	private TreeSet<BabyName> _female_baby_names;
+	private TreeSet<BabyName> _male_baby_names;
   // --------------------------------------------
 
   public BabyNames() {
-  	_baby_names = new TreeSet<BabyName>(new Comparator<BabyName>() {
+  	Comparator<BabyName> babyname_comparator = new Comparator<BabyName>() {
   		
 			@Override
       public int compare(BabyName o1, BabyName o2) {
 				return o1.compareTo(o2.getName());		  
       }
-		});
+			
+		};
+  	_female_baby_names = new TreeSet<BabyName>(babyname_comparator);
+  	_male_baby_names = new TreeSet<BabyName>(babyname_comparator);
   }
   
   private Gender getGender(int genderId){
@@ -74,7 +78,11 @@ class BabyNames {
   	Gender _gender = getGender(genderSuitability);
   	BabyName bn = new BabyName(babyName, _gender);
   	
-  	this._baby_names.add(bn);
+  	if (_gender == Gender.MALE){
+  		this._male_baby_names.add(bn);
+  	} else if (_gender == Gender.FEMALE){
+  		this._female_baby_names.add(bn);
+  	}
     // --------------------------------------------
   }
 
@@ -84,18 +92,28 @@ class BabyNames {
     // how many baby names starts
     // with prefix that is inside query interval [START..END)
     // --------------------------------------------
-//    System.out.println(START + ", " + END);
-    for (BabyName baby_name: this._baby_names){
-    	Gender gender_baby = baby_name.getGender();
-    	Gender gender_pref = getGender(genderPreference);
-    	if (gender_pref == null || gender_baby == gender_pref){   		
-    		int lexical_start_bound = baby_name.compareTo(START);
-    		int lexical_end_bound = baby_name.compareTo(END);
-    		if (lexical_start_bound >= 0 && lexical_end_bound < 0){
-    			ans += 1;
-    		}
+    // System.out.println(START + ", " + END);
+    Gender gender_pref = getGender(genderPreference);
+    if (gender_pref == Gender.MALE || gender_pref == null) {
+    	for (BabyName baby_name: this._male_baby_names){		
+  			int lexical_start_bound = baby_name.compareTo(START);
+  			int lexical_end_bound = baby_name.compareTo(END);
+  			if (lexical_start_bound >= 0 && lexical_end_bound < 0){
+  				ans += 1;
+  			}
+//  			System.out.println(baby_name.getName() + ":" + lexical_start_bound + ".." +lexical_end_bound);
     	}
-//    	System.out.println(baby_name.getName() + ":" + lexical_start_bound + ".." +lexical_end_bound);
+    }
+    
+    if (gender_pref == Gender.FEMALE || gender_pref == null){
+    	for (BabyName baby_name: this._female_baby_names){		
+  			int lexical_start_bound = baby_name.compareTo(START);
+  			int lexical_end_bound = baby_name.compareTo(END);
+  			if (lexical_start_bound >= 0 && lexical_end_bound < 0){
+  				ans += 1;
+  			}
+//  			System.out.println(baby_name.getName() + ":" + lexical_start_bound + ".." +lexical_end_bound);
+    	}
     }
     // --------------------------------------------
 
