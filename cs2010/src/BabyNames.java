@@ -5,61 +5,53 @@ import java.io.*;
 // write your name here: Eugene
 // write list of collaborators here (reading someone's post in Facebook group and using the idea is counted as collaborating):
 
+enum Gender {
+	MALE,
+	FEMALE;
+}
+
+/**
+ * Baby Name Data Structure
+ */
+class BabyName implements Comparable<String>{
+
+	private String _name;
+	private Gender _gender;
+	
+	public BabyName(String name, Gender gender){
+		this._name = name;
+		this._gender = gender;
+	}
+	
+	public String getName(){
+		return this._name;
+	}
+	
+	public Gender getGender(){
+		return this._gender;			
+	}
+
+	@Override
+  public int compareTo(String name) {
+		return this.getName().compareTo(name);
+  }
+}
 
 class BabyNames {
 
-	
   // Declaration
   // --------------------------------------------
-
-	enum Gender {
-		MALE,
-		FEMALE;
-	}
-	/**
-	 * Baby Name Data Structure
-	 */
-	class BabyName implements Comparator<BabyName>, Comparable<String>{
-
-		private String _name;
-		private Gender _gender;
-		
-		public BabyName(String name, Gender gender){
-			this._name = name;
-			this._gender = gender;
-		}
-		
-		public String getName(){
-			return this._name;
-		}
-		
-		public Gender getGender(){
-			return this._gender;			
-		}
-
-		@Override
-    public int compare(BabyName o1, BabyName o2) {
-			return o1.compareTo(o2.getName());
-    }
-
-		@Override
-    public int compareTo(String name) {
-			return this.getName().compareTo(name);
-    }
-	}
-	
-	private ArrayList<BabyName> _baby_names;
-
+	private TreeSet<BabyName> _baby_names;
   // --------------------------------------------
 
   public BabyNames() {
-    // Write necessary codes during construction;
-    //
-    // write your answer here
-
-    // --------------------------------------------
-  	_baby_names = new ArrayList<BabyName>();
-    // --------------------------------------------
+  	_baby_names = new TreeSet<BabyName>(new Comparator<BabyName>() {
+  		
+			@Override
+      public int compare(BabyName o1, BabyName o2) {
+				return o1.compareTo(o2.getName());		  
+      }
+		});
   }
   
   private Gender getGender(int genderId){
