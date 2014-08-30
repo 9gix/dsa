@@ -25,6 +25,7 @@ class BabyName implements Comparable<BabyName>{
 	private Gender _gender;
 	private BabyName _left;
 	private BabyName _right;
+	private BabyName _parent;
 	
 	public BabyName(String name, Gender gender){
 		this._name = name;
@@ -62,13 +63,19 @@ class BabyName implements Comparable<BabyName>{
 
 	public void setParent(BabyName _parent) {
 		if (_parent != null){
-			if (_parent.compareTo(this) < 0){
+			if (this.compareTo(_parent) < 0) {
 				_parent.setLeft(this);
 			} else {
 				_parent.setRight(this);
 			}
+			this._parent = _parent;
 		}
   }
+	
+	public BabyName getParent(){
+		return this._parent;
+	}
+	
 }
 
 class MaleBabyName extends BabyName {
@@ -135,16 +142,47 @@ class BabyTree<T> implements ITree {
   			_current = _current.getRight();
   		}
   	}
+  	
+  	bn.setParent(_parent);
 
 	  if (_parent == null){
 	  	this._root = bn;
-	  } else if (bn.compareTo(_parent) < 0) {
-	  	_parent.setLeft(bn);
-	  } else {
-	  	_parent.setRight(bn);
 	  }
 	}
 	
+	public void rotateRight(BabyName pivot){
+		BabyName left_pivot = pivot.getLeft();
+		
+		BabyName right_of_left_pivot = left_pivot.getRight();
+		  
+		pivot.setLeft(right_of_left_pivot);
+		
+		if (right_of_left_pivot != null){
+			right_of_left_pivot.setParent(pivot);
+		}
+		
+		left_pivot.setParent(pivot.getParent());
+		
+		pivot.setParent(left_pivot);
+	}
+	
+	public void rotateLeft(BabyName pivot){
+		
+		BabyName right_pivot = pivot.getRight();
+		
+		BabyName left_of_right_pivot = right_pivot.getLeft();
+		  
+		pivot.setRight(left_of_right_pivot);
+		
+		if (left_of_right_pivot != null){
+			left_of_right_pivot.setParent(pivot);
+		}
+		
+		right_pivot.setParent(pivot.getParent());
+		
+		pivot.setParent(right_pivot);
+		
+	}
 }
 
 class BabyNames {
