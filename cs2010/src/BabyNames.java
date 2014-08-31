@@ -274,6 +274,59 @@ class BabyTree<T> implements ITree {
 
 	}
 
+	public String getString() {
+		if (this._root == null) {
+			return "No Baby Names";
+		} else {
+			return this.getString(this._root, "", true);
+		}
+	}
+
+	private String getString(BabyName node, String prefix, boolean isTail) {
+		StringBuilder builder = new StringBuilder();
+
+		if (node.getParent() != null) {
+			String side = "left";
+			if (node == node.getParent().getRight()) {
+				side = "right";
+			}
+			builder.append(prefix + (isTail ? "|__ " : "|-- ") + "(" + side + ") "
+			    + node.getName() + "\n");
+		} else {
+			builder.append(prefix + (isTail ? "|__ " : "|-- ") + node.getName()
+			    + "\n");
+		}
+		List<BabyName> children = null;
+		BabyName left = node.getLeft();
+		BabyName right = node.getRight();
+		if (left != null || right != null) {
+			children = new ArrayList<BabyName>(2);
+			if (left != null) {
+				children.add(left);
+			}
+			if (right != null) {
+				children.add(right);
+			}
+		}
+		if (children != null) {
+			for (int i = 0; i < children.size() - 1; i++) {
+				builder.append(this.getString(children.get(i), prefix
+				    + (isTail ? "    " : "|   "), false));
+			}
+			if (children.size() >= 1) {
+				builder.append(this.getString(children.get(children.size() - 1), prefix
+				    + (isTail ? "    " : "|   "), true));
+			}
+		}
+
+		return builder.toString();
+	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return this.getString();
+	}
 }
 
 class BabyNames {
