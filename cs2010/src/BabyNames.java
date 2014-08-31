@@ -26,6 +26,7 @@ class BabyName implements Comparable<BabyName>{
 	private BabyName _left;
 	private BabyName _right;
 	private BabyName _parent;
+	private int _height;
 	
 	public BabyName(String name, Gender gender){
 		this._name = name;
@@ -68,14 +69,116 @@ class BabyName implements Comparable<BabyName>{
 			} else {
 				_parent.setRight(this);
 			}
-			this._parent = _parent;
 		}
+		this._parent = _parent;
   }
 	
 	public BabyName getParent(){
 		return this._parent;
 	}
+
+	public int getHeight() {
+	  return _height;
+  }
+
+	public void setHeight(int height) {
+	  this._height = height;
+  }
 	
+	public boolean isHeightBalanced(){
+		return Math.abs(this.balanceFactor()) <= 1;
+	}
+	
+	public int balanceFactor(){
+		int leftheight = 0;
+		int rightheight = 0;
+		BabyName left = this.getLeft();
+		BabyName right = this.getRight();
+		if (left != null){
+			leftheight = left.getHeight();
+		}
+		if (right != null){
+			rightheight = right.getHeight();
+		}
+		return leftheight - rightheight;
+	}
+	
+	public void updateHeight(){
+		int leftheight = 0;
+		int rightheight = 0;
+		BabyName left = this.getLeft();
+		BabyName right = this.getRight();
+		if (left != null){
+			leftheight = left.getHeight();
+		}
+		if (right != null){
+			rightheight = right.getHeight();
+		}
+		int height = Math.max(leftheight, rightheight) + 1;			
+		
+		this.setHeight(height);
+	}
+	
+	public void balance(){
+
+		if (this.balanceFactor() == 2){
+			BabyName left = this.getLeft();
+			if (left != null){
+				switch (left.balanceFactor()) {
+				case -1:
+					this.getLeft().rotateLeft();
+				case 1:
+					this.rotateRight();
+					break;
+				}
+			}
+		} else if (this.balanceFactor() == -2){
+			BabyName right = this.getRight();
+			if (right != null){
+				switch (right.balanceFactor()) {
+				case 1:
+					this.getRight().rotateRight();
+				case -1:
+					this.rotateLeft();
+					break;
+				}
+			}
+		}
+	}
+	
+	public void rotateRight(){
+		BabyName left_pivot = this.getLeft();
+		
+		BabyName right_of_left_pivot = left_pivot.getRight();
+		
+		this.setLeft(right_of_left_pivot);
+		
+		if (right_of_left_pivot != null){
+			right_of_left_pivot.setParent(this);
+		}
+		
+		left_pivot.setParent(this.getParent());
+		
+		this.setParent(left_pivot);
+	}
+	
+	public void rotateLeft(){
+		
+		BabyName right_pivot = this.getRight();
+		
+		BabyName left_of_right_pivot = right_pivot.getLeft();
+		  
+		this.setRight(left_of_right_pivot);
+		
+		if (left_of_right_pivot != null){
+			left_of_right_pivot.setParent(this);
+		}
+		
+		right_pivot.setParent(this.getParent());
+		
+		this.setParent(right_pivot);
+		
+	}
 }
 
 class MaleBabyName extends BabyName {
@@ -145,44 +248,32 @@ class BabyTree<T> implements ITree {
   	
   	bn.setParent(_parent);
 
-	  if (_parent == null){
-	  	this._root = bn;
-	  }
+	  this.postInsert(bn);
 	}
-	
-	public void rotateRight(BabyName pivot){
-		BabyName left_pivot = pivot.getLeft();
-		
-		BabyName right_of_left_pivot = left_pivot.getRight();
+
+	/***
+	 * AVL post insert procedure
+	 * 1. update the height for each of the parent node
+	 * 2. balance the subtree for each of the parent node.
+	 * @param bn Node
+	 */
+	private void postInsert(BabyName bn) {
+		BabyName _current = bn;
+		while (_current != null){
+			_current.updateHeight();
+			_current.balance();
+
+		  if (_current.getParent() == null){
+		  	this._root = _current;
+		  }
 		  
-		pivot.setLeft(right_of_left_pivot);
-		
-		if (right_of_left_pivot != null){
-			right_of_left_pivot.setParent(pivot);
+			_current = _current.getParent();
+			
 		}
-		
-		left_pivot.setParent(pivot.getParent());
-		
-		pivot.setParent(left_pivot);
-	}
-	
-	public void rotateLeft(BabyName pivot){
-		
-		BabyName right_pivot = pivot.getRight();
-		
-		BabyName left_of_right_pivot = right_pivot.getLeft();
-		  
-		pivot.setRight(left_of_right_pivot);
-		
-		if (left_of_right_pivot != null){
-			left_of_right_pivot.setParent(pivot);
-		}
-		
-		right_pivot.setParent(pivot.getParent());
-		
-		pivot.setParent(right_pivot);
-		
-	}
+	  
+
+  }
+
 }
 
 class BabyNames {
@@ -253,6 +344,12 @@ class BabyNames {
     // --------------------------------------------
 
     return ans;
+  }
+  
+  @Override
+  public String toString() {
+    // TODO Auto-generated method stub
+  	return _male_baby_names + "\n" + _female_baby_names;
   }
 
   void run() throws Exception {
