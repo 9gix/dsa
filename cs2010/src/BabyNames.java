@@ -206,6 +206,22 @@ class BabyName implements Comparable<BabyName> {
 
 	}
 
+	public BabyName select(int index) {
+		int left_children_size = 0;
+		if (this.getLeft() != null){
+			left_children_size = this.getLeft().getSize();
+		}
+		
+		if (index == left_children_size){
+			return this;
+		} else if (index < left_children_size){
+			return this.getLeft().select(index);
+		} else {
+			return this.getRight().select(index - (left_children_size + 1));
+		}	  
+
+  }
+
 }
 
 class MaleBabyName extends BabyName {
@@ -364,22 +380,7 @@ class BabyTree<T> implements ITree<BabyName>, IOrderStatisticTree<BabyName> {
 
 	@Override
   public BabyName select(int index) {
-		return this.select(this._root, index);
-  }
-
-	public BabyName select(BabyName babyname, int index) {
-		int left_children_size = 0;
-		if (babyname.getLeft() != null){
-			left_children_size = babyname.getLeft().getSize();
-		}
-		
-		if (index == left_children_size){
-			return babyname;
-		} else if (index < left_children_size){
-			return this.select(babyname.getLeft(), index);
-		} else {
-			return this.select(babyname.getRight(), index - (left_children_size + 1));
-		}
+		return this._root.select(index);
   }
 
 	@Override
