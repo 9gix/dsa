@@ -385,8 +385,25 @@ class BabyTree<T> implements ITree<BabyName>, IOrderStatisticTree<BabyName> {
 
 	@Override
   public int rank(BabyName element) {
+
+		int rank = 1;
 		
-	  return 0;
+		if (element.getLeft() != null){
+			rank += element.getLeft().getSize();
+		}
+		
+		BabyName babyname = element;
+		
+		while (babyname != this._root){
+			if (babyname.getParent().getRight() == babyname){
+				rank += babyname.getParent().getLeft().getSize() + 1;
+			}
+			babyname = babyname.getParent();
+		}
+		
+		return rank;
+		
+		
   }
 }
 
