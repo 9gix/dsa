@@ -194,11 +194,16 @@ class FemaleBabyName extends BabyName {
 	}
 }
 
-interface ITree {
-
+interface ITree<T> {
+	void insert(T element);
 }
 
-class BabyTree<T> implements ITree {
+interface IOrderStatisticTree<T> {
+	T select(int index);
+	int rank(T element);
+}
+
+class BabyTree<T> implements ITree<BabyName>, IOrderStatisticTree<BabyName> {
 
 	private BabyName _root;
 
@@ -327,6 +332,18 @@ class BabyTree<T> implements ITree {
 		// TODO Auto-generated method stub
 		return this.getString();
 	}
+
+	@Override
+  public BabyName select(int index) {
+	  // TODO Auto-generated method stub
+	  return null;
+  }
+
+	@Override
+  public int rank(BabyName element) {
+		
+	  return 0;
+  }
 }
 
 class BabyNames {
