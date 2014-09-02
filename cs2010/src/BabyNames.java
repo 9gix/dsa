@@ -26,10 +26,12 @@ class BabyName implements Comparable<BabyName> {
 	private BabyName _right;
 	private BabyName _parent;
 	private int _height;
+	private int _size;
 
 	public BabyName(String name, Gender gender) {
 		this._name = name;
 		this._gender = gender;
+		this._size = 1;
 	}
 
 	public String getName() {
@@ -82,6 +84,14 @@ class BabyName implements Comparable<BabyName> {
 
 	public void setHeight(int height) {
 		this._height = height;
+	}
+	
+	public int getSize(){
+		return this._size;
+	}
+	
+	public void setSize(int size){
+		this._size = size;
 	}
 
 	public boolean isHeightBalanced() {
@@ -145,6 +155,23 @@ class BabyName implements Comparable<BabyName> {
 		}
 	}
 
+	public void updateSize() {
+		BabyName left_child = this.getLeft();
+		BabyName right_child = this.getRight();
+		
+		int size = 1;
+		
+		if (left_child != null){
+			size += left_child.getSize();
+		}
+		
+		if (right_child != null){
+			size += right_child.getSize();
+		}
+		
+		this.setSize(size);
+  }
+	
 	public void rotateRight() {
 		BabyName left_pivot = this.getLeft();
 
@@ -178,6 +205,7 @@ class BabyName implements Comparable<BabyName> {
 		this.setParent(right_pivot);
 
 	}
+
 }
 
 class MaleBabyName extends BabyName {
@@ -268,6 +296,7 @@ class BabyTree<T> implements ITree<BabyName>, IOrderStatisticTree<BabyName> {
 		while (_current != null) {
 			_current.updateHeight();
 			_current.balance();
+			_current.updateSize();
 
 			if (_current.getParent() == null) {
 				this._root = _current;
@@ -335,8 +364,22 @@ class BabyTree<T> implements ITree<BabyName>, IOrderStatisticTree<BabyName> {
 
 	@Override
   public BabyName select(int index) {
-	  // TODO Auto-generated method stub
-	  return null;
+		return this.select(this._root, index);
+  }
+
+	public BabyName select(BabyName babyname, int index) {
+		int left_children_size = 0;
+		if (babyname.getLeft() != null){
+			left_children_size = babyname.getLeft().getSize();
+		}
+		
+		if (index == left_children_size){
+			return babyname;
+		} else if (index < left_children_size){
+			return this.select(babyname.getLeft(), index);
+		} else {
+			return this.select(babyname.getRight(), index - (left_children_size + 1));
+		}
   }
 
 	@Override
