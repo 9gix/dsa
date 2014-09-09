@@ -222,6 +222,92 @@ class BabyName implements Comparable<BabyName> {
 
   }
 
+	public BabyName lookup(String name) {
+		BabyName babyname = this;
+	  while (babyname != null && !name.equals(babyname.getName())){
+	  	if (name.compareTo(babyname.getName()) < 0){
+	  		babyname = babyname.getLeft();
+	  	} else {
+	  		babyname = babyname.getRight();
+	  	}
+	  }
+	  return babyname;
+  }
+
+	public BabyName lookup_start(String name) {
+		BabyName babyname = this;
+		BabyName _parent = babyname;
+	  while (babyname != null){
+	  	_parent = babyname;
+	  	if (name.compareTo(babyname.getName()) < 0){
+	  		babyname = babyname.getLeft();
+	  	} else {
+	  		babyname = babyname.getRight();
+	  	}
+	  }
+	  return _parent;
+  }
+	
+	public BabyName lookup_end(String name) {
+		BabyName babyname = this;
+		BabyName _parent = babyname;
+	  while (babyname != null && !name.equals(babyname.getName())){
+	  	_parent = babyname;
+	  	if (name.compareTo(babyname.getName()) < 0){
+	  		babyname = babyname.getLeft();
+	  	} else {
+	  		babyname = babyname.getRight();
+	  	}
+	  }
+	  if (babyname == null){
+	  	_parent.predecessor();
+	  }
+	  return babyname;
+  }
+	
+	public BabyName predecessor() {
+	  if (this.getLeft() != null){
+	  	return this.getLeft().maximum();
+	  }
+	  BabyName _parent = this.getParent();
+	  BabyName _current = this;
+	  while (_parent != null && _current == _parent.getLeft()){
+	  	_current = _parent;
+	  	_parent = _parent.getParent();
+	  }
+	  return _parent;
+	  
+  }
+
+	private BabyName maximum() {
+		BabyName _current = this;
+	  while (_current.getRight() != null){
+	  	_current = _current.getRight();
+	  }
+	  return _current;
+  }
+
+	public BabyName successor() {
+	  if (this.getRight() != null){
+	  	return this.getRight().minimum();
+	  }
+	  BabyName _parent = this.getParent();
+	  BabyName _current = this;
+	  while (_parent != null && _current == _parent.getRight()){
+	  	_current = _parent;
+	  	_parent = _parent.getParent();
+	  }
+	  return _parent;
+  }
+
+	public BabyName minimum() {
+		BabyName _current = this;
+	  while (_current.getLeft() != null){
+	  	_current = _current.getLeft();
+	  }
+	  return _current;
+  }
+
 }
 
 class MaleBabyName extends BabyName {
@@ -256,7 +342,55 @@ class BabyTree<T> implements ITree<BabyName>, IOrderStatisticTree<BabyName> {
 	}
 
 	int count_match(String start, String end) {
-		return recursive_name_count(this._root, start, end);
+
+		int left_size= this.getLeftBound(start).getSize();
+		int right_size = this.getRightBound(end).getSize();
+		
+		int entire_size = this._root.getSize();
+		
+		return entire_size - left_size - right_size;		
+	}
+
+
+	BabyName getLeftBound(String start) {
+		BabyName _current = this._root;
+		
+		while (_current.getLeft() != null && _current.getLeft().getName().compareTo(start) > 0){
+			_current = _current.getLeft();
+		}
+		return _current;
+	}
+	
+	BabyName getRightBound(String end) {
+		BabyName _current = this._root;
+		while (_current.getRight() != null && _current.getRight().getName().compareTo(end) <= 0){
+			_current = _current.getRight();
+		}
+		return _current;
+	}
+	
+	int rank_name_count(String start, String end){
+		BabyName start_baby = this.getStartBaby(this._root, start);
+		BabyName end_baby = this.getStartBaby(this._root, end);
+		
+		return this.rank(end_baby) - this.rank(start_baby);
+	}
+	
+	BabyName getStartBaby(BabyName babyname, String start){
+		int lexical_start_bound = start.compareTo(babyname.getName());
+		if (lexical_start_bound < 0){
+			if (babyname.getLeft() != null){
+				return this.getStartBaby(babyname.getLeft(), start);
+			} else {
+				return babyname;
+			}
+		} else {
+			if (babyname.getRight() != null){
+				return this.getStartBaby(babyname.getRight(), start);
+			} {
+				return babyname.getParent();
+			}
+		}
 	}
 
 	int recursive_name_count(BabyName babyname, String start, String end) {
@@ -388,23 +522,59 @@ class BabyTree<T> implements ITree<BabyName>, IOrderStatisticTree<BabyName> {
 
 		int rank = 1;
 		
-		if (element.getLeft() != null){
+		if (element != null && element.getLeft() != null){
 			rank += element.getLeft().getSize();
 		}
 		
 		BabyName babyname = element;
 		
 		while (babyname != this._root){
-			if (babyname.getParent().getRight() == babyname){
-				rank += babyname.getParent().getLeft().getSize() + 1;
+			BabyName parent = babyname.getParent();
+			if (parent.getRight() == babyname){
+				if (babyname.getParent().getLeft() != null){
+					rank += babyname.getParent().getLeft().getSize() + 1;
+				}
 			}
 			babyname = babyname.getParent();
 		}
 		
 		return rank;
-		
-		
   }
+	
+
+	/**
+	 * Does a exact match lookup for the name 
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public BabyName lookup(String name){
+		return this._root.lookup(name);
+	}
+	
+	/**
+	 * Does a lookup by matching the name, 
+	 * but if the lookup doesn't match any element, 
+	 * it will return the closest successor.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public BabyName lookup_or_successor(String name){
+		return this._root.lookup_start(name);
+	}
+	
+	/**
+	 * Does a lookup by matching the name, 
+	 * but if the lookup doesn't match any element, 
+	 * it will return the closest successor.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public BabyName lookup_or_predecessor(String name){
+		return this._root.lookup_start(name);
+	}
 }
 
 class BabyNames {
