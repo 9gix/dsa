@@ -1,8 +1,6 @@
 import java.util.*;
 import java.io.*;
 
-import org.w3c.dom.views.AbstractView;
-
 // matric number: A0116631N
 // name: Eugene
 // List of Collaborator: Introduction to Algorithms by CLRS
@@ -12,7 +10,7 @@ interface PriorityElement {
 	public void increasePriority(int increment);
 }
 
-class Woman implements PriorityElement{
+class Woman implements PriorityElement {
 	private String name;
 	private int dilation;
 	public Woman(String name){
@@ -175,7 +173,7 @@ class BinaryHeap<E extends PriorityElement> {
 	 */
 	private int right(int index){
 		// bitwise operation for (2 * index) + 1
-		return index << 1; 
+		return (index << 1) + 1; 
 	}
 	
 	/***
@@ -228,9 +226,7 @@ class BinaryHeap<E extends PriorityElement> {
 	 * @param index
 	 */
 	private void shiftUp(int index) {
-		E parent = this.elements.get(this.parent(index));
-		E current = this.elements.get(index);
-	  while (index > 1 && parent.getPriority() < current.getPriority()){
+	  while (index > 1 && this.elements.get(this.parent(index)).getPriority() < this.elements.get(index).getPriority()){
 	  	this.swap(index, this.parent(index));
 	  	index = this.parent(index);
 	  }
