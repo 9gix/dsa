@@ -37,12 +37,11 @@ class Labor {
 	class Vertex {
 		private int id;
 		private int ssp_estimate;
-		private Vertex parent;
 		private List<Adjacency> adjacencies;
 
 		public Vertex(int id) {
 			this.setId(id);
-			this.adjacencies = new LinkedList<Labor.Adjacency>();
+			this.adjacencies = new ArrayList<Labor.Adjacency>();
 		}
 
 		public int getSSPEstimate() {
@@ -59,14 +58,6 @@ class Labor {
 
 		public void addAdjacency(Vertex vertex, int weight) {
 			this.adjacencies.add(new Adjacency(vertex, weight));
-		}
-
-		public Vertex getParent() {
-			return parent;
-		}
-
-		public void setParent(Vertex parent) {
-			this.parent = parent;
 		}
 
 		public int getId() {
@@ -86,19 +77,6 @@ class Labor {
 
 	class Graph {
 		private List<Vertex> vertices;
-		Comparator<Vertex> vertex_id_comparator = new Comparator<Vertex>() {
-			@Override
-			public int compare(Vertex u, Vertex v) {
-				if (u.getId() < v.getId()) {
-					return -1;
-				} else if (u.getId() > v.getId()) {
-					return 1;
-				} else {
-					return 0;
-				}
-			}
-
-		};
 		Comparator<Vertex> vertex_ssp_estimate_comparator = new Comparator<Vertex>() {
 			@Override
 			public int compare(Vertex u, Vertex v) {
@@ -113,28 +91,58 @@ class Labor {
 
 		};
 
-		public Graph() {
+		@SuppressWarnings("serial")
+		class SSPEstimatePair extends SimpleEntry<Integer, Vertex> implements
+		    Comparable<SSPEstimatePair> {
 
-			this.vertices = new LinkedList<Vertex>();
+			public SSPEstimatePair(Integer estimate, Vertex vertex) {
+				super(estimate, vertex);
+			}
+
+			@Override
+			public int compareTo(SSPEstimatePair p2) {
+				int u = this.getKey();
+				int v = p2.getKey();
+				if (u < v) {
+					return -1;
+				} else if (u > v) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+
 		}
 
-		Set<Vertex> dijkstra(Vertex source) {
+		public Graph() {
+
+			this.vertices = new ArrayList<Vertex>();
+		}
+
+		void dijkstra(Vertex source) {
 			this.initSSP(source);
-			Set<Vertex> ssp_tree = new TreeSet<Vertex>(vertex_id_comparator);
-			PriorityQueue<Vertex> queue = new PriorityQueue<Vertex>(this.vertices.size(), vertex_ssp_estimate_comparator);
-			queue.addAll(this.vertices);
+
+			PriorityQueue<SSPEstimatePair> queue = new PriorityQueue<SSPEstimatePair>();
+			queue.add(new SSPEstimatePair(0, source));
 			while (!queue.isEmpty()) {
-				Vertex u = queue.poll();
-				ssp_tree.add(u);
-				for (Adjacency adjacency : u.getAdjacencies()) {
-					if (this.relax(u, adjacency)) {
-						// Re-order the priority queue, upon SSP estimate changed
-						queue.remove(adjacency.getVertex());
-						queue.add(adjacency.getVertex());
+				SSPEstimatePair est_pair = queue.poll();
+				Vertex u = est_pair.getValue();
+				if (u.getId() == 1) { // because hospital is the current minimum, thus
+															// it is safe to ignore the rest in the queue.
+					break;
+				}
+
+				if (est_pair.getKey() == u.getSSPEstimate()) {
+					for (Adjacency adjacency : u.getAdjacencies()) {
+						if (this.relax(u, adjacency)) {
+							// Re-order the priority queue, upon SSP estimate changed
+							queue.add(new SSPEstimatePair(adjacency.getVertex()
+							    .getSSPEstimate(), adjacency.getVertex()));
+						}
 					}
 				}
 			}
-			return ssp_tree;
+
 		}
 
 		private boolean relax(Vertex u, Adjacency adjacency) {
@@ -142,7 +150,6 @@ class Labor {
 			int weight = adjacency.getWeight();
 			if (v.getSSPEstimate() > u.getSSPEstimate() + weight) {
 				v.setSSPEstimate(u.getSSPEstimate() + weight);
-				v.setParent(u);
 				return true;
 			}
 			return false;
@@ -151,8 +158,7 @@ class Labor {
 
 		private void initSSP(Vertex source) {
 			for (Vertex v : this.vertices) {
-				v.setSSPEstimate(5000);
-				v.setParent(null);
+				v.setSSPEstimate(1001);
 			}
 			source.setSSPEstimate(0);
 		}
@@ -182,8 +188,8 @@ class Labor {
 
 			for (int i = 0; i < n_vertices; i++) {
 				this.singapore_map.vertices.add(new Vertex(i)); // Instantiate all the
-																												// Vertex (without edge
-																												// yet)
+				                                                // Vertex (without edge
+				                                                // yet)
 			}
 
 			for (int i = 0; i < n_vertices; i++) {
@@ -211,7 +217,7 @@ class Labor {
 }
 
 class IntegerScanner { // coded by Ian Leow, using any other I/O method is not
-											 // recommended
+	                     // recommended
 	BufferedInputStream bis;
 
 	IntegerScanner(InputStream is) {
