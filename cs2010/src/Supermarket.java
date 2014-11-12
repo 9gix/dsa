@@ -18,7 +18,7 @@ class Supermarket {
 	// --------------------------------------------
 	private int V; // number of vertices in the graph including the
 					// source/cashier. V = N+1
-	private int[][] D; // Distance Matrix
+	private int[] D; //Estimate for SSSP (for dijkstra)
 	private int[][] memo;
 	private int shoppingMask;
 
@@ -35,6 +35,44 @@ class Supermarket {
 			}
 		}
 	}
+	
+	void initSSP(int source) {
+		for (int v = 0; v < V; v++) {
+			D[v] = Integer.MAX_VALUE;
+		}
+		D[source] = 0;
+	}
+	
+	void dijkstra(int source) {
+		this.initSSP(source);
+
+		PriorityQueue<IntegerPair> queue = new PriorityQueue<IntegerPair>();
+		queue.add(new IntegerPair(0, source));
+		while (!queue.isEmpty()) {
+			IntegerPair u_pair = queue.poll();
+			int u = u_pair.second();
+
+			if (D[u] == u_pair.first()) {
+				for (int v = 0; v < T[u].length; v++) {
+					if (this.relax(u, v, T[u][v])) {
+						// Re-order the priority queue, upon SSP estimate changed
+						queue.add(new IntegerPair(D[v], v));
+					}
+				}
+			}
+		}
+
+	}
+	
+	private boolean relax(int u, int v, int weight) {
+		if (D[v] > D[u] + weight) {
+			D[v] = D[u] + weight;
+			return true;
+		}
+		return false;
+
+	}
+
 
 	int DP_TSP(int u, int mask) {
 		if (mask == (1 << K) - 1) { // base case: all vertex visited from u
@@ -74,10 +112,23 @@ class Supermarket {
 		}
 		this.shoppingMask = ~this.shoppingMask & ((1 << V) - 1); // invert bits
 
-		floydwarshall();
+//		floydwarshall();
+		multipleDijkstra();
 		
 		int ans = DP_TSP(0, 0);
 		return ans;
+	}
+
+	private void multipleDijkstra() {
+		// TODO Auto-generated method stub
+		this.D = new int[V];
+		for (int i: this.shoppingList){
+			dijkstra(i);
+			for (int j = 0; j < V; j++){
+				T[i][j] = D[j];
+				T[j][i] = D[j];
+			}
+		}
 	}
 
 	// You can add extra function if needed
