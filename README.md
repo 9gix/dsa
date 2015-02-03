@@ -7,6 +7,6 @@ NUS course work for Data Structure Algorithms
 * [CS2010: Data Structure Algorithms II][cs2010]
 * [CS3230: Design and Analysis of Algorithms][cs3230]
 
-[cs1020]: 1020/README.md
-[cs2010]: 2010/README.md
-[cs3230]: 3230/README.md
+[cs1020]: cs1020/README.md
+[cs2010]: cs2010/README.md
+[cs3230]: cs3230/README.md
