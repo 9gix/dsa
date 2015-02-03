@@ -1,10 +1,12 @@
-CS1020: Data Structure Algorithms I
-======
+Data Structure and Algorithms
+=============================
 
-To Run the TestRunner Please configure your Java build path to `cs1020/testdata`
+NUS course work for Data Structure Algorithms
 
-CS2010: Data Structure Algorithms II
-======
+* [CS1020: Data Structure Algorithms I][cs1020]
+* [CS2010: Data Structure Algorithms II][cs2010]
+* [CS3230: Design and Analysis of Algorithms][cs3230]
 
-This is a continuation of the data structure algorithms from the earlier semester.
-
+[cs1020]: 1020/README.md
+[cs2010]: 2010/README.md
+[cs3230]: 3230/README.md
