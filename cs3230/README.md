@@ -2,5 +2,5 @@
 
 ## Spaceship Momentum
 
-Long Multiplication Algorithms
-Karatsuba Algorithms
+* Long Multiplication Algorithms
+* Karatsuba Algorithms
