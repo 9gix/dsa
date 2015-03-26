@@ -2,7 +2,6 @@
 
 ## Spaceship Momentum
 
-Long Multiplication Algorithms
-
-Hamiltonian Cycle Problem
-
+* Long Multiplication Algorithms
+* Karatsuba Algorithms
+* Hamiltonian Cycle Verification Algorithms
