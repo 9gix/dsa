@@ -1,9 +1,15 @@
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+abstract class Edge {
+    
+}
 
 class Vertex {
     private String label;
@@ -30,17 +36,25 @@ class Vertex {
     public void setLabel(String label) {
         this.label = label;
     }
-    
+
     @Override
     public String toString() {
         return this.label;
     }
     
 }
-class Edge {
-    private Set<Vertex> vertexPair;
-    public Edge(Vertex u, Vertex v){
-        vertexPair = new HashSet<Vertex>();
+
+class UndirectedEdge extends Edge {
+    private SortedSet<Vertex> vertexPair;
+    public UndirectedEdge(Vertex u, Vertex v){
+        vertexPair = new TreeSet<Vertex>(new Comparator<Vertex>() {
+
+            @Override
+            public int compare(Vertex u, Vertex v) {
+                return u.getLabel().compareTo(v.getLabel());
+            }
+            
+        });
         vertexPair.add(u);
         vertexPair.add(v);
     }
@@ -51,11 +65,11 @@ class Edge {
             return true;            
         }
         
-        if (!(obj instanceof Edge)){
+        if (!(obj instanceof UndirectedEdge)){
             return false;
         }
         
-        return vertexPair.equals(((Edge) obj).vertexPair);
+        return vertexPair.equals(((UndirectedEdge) obj).vertexPair);
     }
     
     @Override
@@ -65,25 +79,25 @@ class Edge {
     
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
-        return this.vertexPair.toString();
+        return this.vertexPair.first().toString() + " " + this.vertexPair.last().toString();
     }
 }
 
-public class HamCycle {
-    
-    
+class Graph {
     
     // Vertex List
     private Set<Vertex> vertexSet;
+    
     // Edge Set DataStructure
     private Set<Edge> edgeSet;
+    
     // Hamiltonian Cycle (verify this exists in the graph)
     private ArrayList<Vertex> hamCycle;
 
-    public HamCycle(){
+    
+    public Graph(){
         setVertexSet(new HashSet<Vertex>());
-        edgeSet = new HashSet<Edge>();
+        setEdgeSet(new HashSet<Edge>());
         hamCycle = new ArrayList<Vertex>();
     }
     
@@ -93,12 +107,8 @@ public class HamCycle {
         return vert;
     }
     
-    public Edge addEdge(String v1, String v2){
-        Vertex u = addVertex(v1);
-        Vertex v = addVertex(v2);
-        Edge e = new Edge(u, v);
-        edgeSet.add(e);
-        return e;
+    public void addEdge(Edge edge){
+        getEdgeSet().add(edge);
     }
 
     public void addHamCycleVertex(String v) {
@@ -130,7 +140,7 @@ public class HamCycle {
             } catch (IndexOutOfBoundsException e){
                 v = getHamCycle().get(i);
             }
-            if (!edgeSet.contains(new Edge(u, v))){
+            if (!getEdgeSet().contains(new UndirectedEdge(u, v))){
                 return false;
             }
         }
@@ -170,6 +180,17 @@ public class HamCycle {
         this.vertexSet = vertexSet;
     }
     
+    public Set<Edge> getEdgeSet() {
+        return edgeSet;
+    }
+
+    public void setEdgeSet(Set<Edge> edgeSet) {
+        this.edgeSet = edgeSet;
+    }
+}
+
+
+public class HamCycle{
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int T = scanner.nextInt(); // # of testcases
@@ -178,32 +199,34 @@ public class HamCycle {
             int N = scanner.nextInt(); // # of vertices
             int M = scanner.nextInt(); // # of edges
             
-            HamCycle hamCycle = new HamCycle();
+            Graph graph = new Graph();
             
             for (int j = 0; j < M; j++){
                 String u = scanner.next();
                 String v = scanner.next();
-                hamCycle.addEdge(u, v);
+                Vertex uVertex = graph.addVertex(u);
+                Vertex vVertex = graph.addVertex(v);
+                graph.addEdge(new UndirectedEdge(uVertex, vVertex));
             }
             
-            int isolatedVertexCount = N - hamCycle.getVertexSet().size();
+            int isolatedVertexCount = N - graph.getVertexSet().size();
             for (int j = 0; j < isolatedVertexCount; j++){
-                hamCycle.addVertex("ISOLATED " + j);
+                graph.addVertex("ISOLATED " + j);
             }
             
             int p = scanner.nextInt();
-            ArrayList<Vertex> P = new ArrayList<Vertex>();
             for (int j = 0; j < p; j++){
                 String v = scanner.next();
-                hamCycle.addHamCycleVertex(v);
+                graph.addHamCycleVertex(v);
             }
             
-            if (hamCycle.isHamCycle()){
+            if (graph.isHamCycle()){
                 System.out.println("YES");
             } else {
                 System.out.println("NO");
             }
-        }        
+        }   
+        scanner.close();
     }
 
 
